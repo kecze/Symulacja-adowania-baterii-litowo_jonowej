@@ -1,6 +1,17 @@
 import matplotlib.pyplot as plt
 
 
+def plot(x, y, z):
+    plt.subplot(2, 1, 1)
+    plt.plot(x, y)
+    plt.xlabel('time [min]')
+    plt.ylabel('power [kW]')
+    plt.subplot(2, 1, 2)
+    plt.plot(x, z)
+    plt.xlabel('time [min]')
+    plt.ylabel('SOC [%]')
+
+
 def charging(soc, full_cap, power, ch_time):
     act_cap = soc/100 * full_cap
     beg_cap = act_cap
@@ -22,15 +33,7 @@ def charging(soc, full_cap, power, ch_time):
         x.append(time)
         y.append(pow_used)
         z.append(act_cap / full_cap * 100)
-    plt.subplot(2, 1, 1)
-    plt.plot(x, y)
-    plt.xlabel('time [min]')
-    plt.ylabel('power [kW]')
-    plt.subplot(2, 1, 2)
-    plt.plot(x, z)
-    plt.xlabel('time [min]')
-    plt.ylabel('SOC [%]')
-    #plt.show()
+    plot(x, y, z)
     print("NEW - after", time, "minutes SOC is", round(soc_v), "%, capacity recharged =", round(act_cap - beg_cap), "kWh")
 
 
@@ -38,16 +41,22 @@ def prev_charging(soc, full_cap, power, ch_time):
     act_cap = soc / 100 * full_cap
     beg_cap = act_cap
     time = 0
+    x, y, z = [], [], []
     while act_cap < full_cap and time <= ch_time:
         act_cap += power * 1/60
         time += 1
+        x.append(time)
+        y.append(power)
+        z.append(act_cap / full_cap * 100)
     soc_v = round(act_cap) / full_cap * 100
     print("OLD - after", time, "minutes SOC is", round(soc_v), "%, capacity recharged =", round(act_cap - beg_cap), "kWh")
+    plot(x, y, z)
 
 
 def comparison(soc, full_cap, power, ch_time):
     charging(soc, full_cap, power, ch_time)
     prev_charging(soc, full_cap, power, ch_time)
+    plt.show()
 
 
 comparison(50, 62, 7.7, 360)
